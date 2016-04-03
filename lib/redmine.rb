@@ -375,7 +375,7 @@ Redmine::MenuManager.map :project_menu do |menu|
       end
   )
   menu.push :issues, {:controller => 'issues', :action => 'index'},
-            :param => :project_id, :caption => :label_issue_plural
+            :param => :project_id, :caption => :label_issue_plural, :html => { :accesskey => "i" }
   menu.push(
     :new_issue,
     {:controller => 'issues', :action => 'new', :copy_from => nil},

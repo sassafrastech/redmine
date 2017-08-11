@@ -29,7 +29,7 @@ class IssueQuery < Query
     QueryColumn.new(:tracker, :sortable => "#{Tracker.table_name}.position", :groupable => true),
     QueryColumn.new(:parent,
                     :sortable => ["#{Issue.table_name}.root_id", "#{Issue.table_name}.lft ASC"],
-                    :default_order => 'desc', :caption => :field_parent_issue),
+                    :default_order => 'desc', :caption => :field_parent_issue, :groupable => true),
     QueryAssociationColumn.new(:parent, :subject, :caption => :field_parent_issue_subject),
     QueryColumn.new(:status, :sortable => "#{IssueStatus.table_name}.position", :groupable => true),
     QueryColumn.new(:priority, :sortable => "#{IssuePriority.table_name}.position",
@@ -369,7 +369,7 @@ class IssueQuery < Query
   end
 
   def default_sort_criteria
-    [['id', 'desc']]
+    [['root_id', 'desc'], ['id', 'desc']]
   end
 
   def base_scope

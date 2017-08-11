@@ -932,7 +932,7 @@ class Query < ApplicationRecord
       if column.is_a?(TimestampQueryColumn)
         column_sortable = Redmine::Database.timestamp_to_date(column.sortable, User.current.time_zone)
       end
-      Array(column_sortable).map {|s| Arel.sql("#{s} #{order}")}
+      Array(column_sortable).map {|s| (s.split.size > 1) ? s : Arel.sql("#{s} #{order}")}
     end
   end
 

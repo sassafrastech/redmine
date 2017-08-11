@@ -42,3 +42,5 @@
 /Gemfile.lock
 /Gemfile.local
 
+
+config/secrets.yml

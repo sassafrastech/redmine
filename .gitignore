@@ -40,5 +40,5 @@
 /Gemfile.lock
 /Gemfile.local
 
-
-config/secrets.yml
+# IDEs
+.idea/

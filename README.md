@@ -4,7 +4,9 @@ Sassafras fork of Redmine: a flexible project management web application written
 
 More details can be found in the `doc` directory or on the official website <http://www.redmine.org>.
 
-## Local development
+## Development
+
+### Local setup
 
 Official, detailed instructions can be found in the `INSTALL` file. Some of the steps are out of date for 2019 since Sassafras is using an old fork.
 
@@ -49,16 +51,38 @@ It's recommended that you use a separate rbenv installation for this since it's 
 1. Configure access:
 
     ```bash
-    # Seemingly unnecessary
+    # Probably unnecessary
     # sudo chown -R redmine:redmine files log tmp public/plugin_assets
 
+    # Maybe unnecessary?
     sudo chmod -R 755 files log tmp public/plugin_assets
     ```
 
 1. Verify it works:
 
-    - `ruby bin/rails server -e production`
+    - `rails s -e production`
     - Open <http://localhost:3000/>
     - Sign in with credentials `admin`/`admin`
 
 1. Load the defaults via <http://localhost:3000/admin>
+
+### Plugin development
+
+See [Redmine tutorial](http://www.redmine.org/projects/redmine/wiki/Plugin_Tutorial) for more info.
+
+1. Put any plugins in the `plugins/` directory, e.g. for GreenMachine:
+
+    ```bash
+    cd plugins
+    git clone git@github.com:sassafrastech/greenmachine.git
+    ```
+
+1. Install plugin dependencies: `bundle install`
+
+1. Restart the server for plugins to take effect
+
+For GreenMachine specifically:
+
+1. Copy config files: `cp lib/secrets.rb{.example,}`
+
+1. Add QuickBooks keys to `lib/secrets.rb`

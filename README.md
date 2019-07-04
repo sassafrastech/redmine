@@ -66,6 +66,12 @@ It's recommended that you use a separate rbenv installation for this since it's 
 
 1. Load the defaults via <http://localhost:3000/admin>
 
+### Copying data
+
+If you want to mirror the live database, download a dump and then:
+
+1. `mysql -u root redmine < dump.sql`
+
 ### Plugin development
 
 See [Redmine tutorial](http://www.redmine.org/projects/redmine/wiki/Plugin_Tutorial) for more info.
@@ -77,7 +83,7 @@ See [Redmine tutorial](http://www.redmine.org/projects/redmine/wiki/Plugin_Tutor
     git clone git@github.com:sassafrastech/greenmachine.git
     ```
 
-1. Install plugin dependencies: `bundle install`
+1. Install new dependencies as usual (from project root, not plugins root): `bundle install`
 
 1. Restart the server for plugins to take effect
 

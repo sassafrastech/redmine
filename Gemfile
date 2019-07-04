@@ -77,6 +77,11 @@ else
   warn("Please configure your config/database.yml first")
 end
 
+# Dev tools (that may be run in production mode since development mode doesn't seem to be working)
+gem "rerun", "~> 0.13.0"
+gem "pry", "~> 0.12.2"
+gem "pry-nav", "~> 0.3.0"
+
 group :development do
   gem "yard"
 end

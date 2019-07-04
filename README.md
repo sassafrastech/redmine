@@ -66,6 +66,11 @@ It's recommended that you use a separate rbenv installation for this since it's 
 
 1. Load the defaults via <http://localhost:3000/admin>
 
+### Local dev
+
+1. Watch for changes with `bundle exec rerun --dir app,config,plugins,public rails s -- -e production`
+    - Note: if you try to refresh the page before it's ready you'll break things and see `Cannot GET /route`; simply restart the server in this case (hotkey: `r`)
+
 ### Copying data
 
 If you want to mirror the live database, download a dump and then:

@@ -20,7 +20,6 @@ gem "mimemagic"
 gem "nokogiri", "~> 1.6.8"
 gem "i18n", "~> 0.7.0"
 gem "ffi", "1.9.14", :platforms => :mingw if RUBY_VERSION < "2.0"
-gem "rerun", "~> 0.13.0"
 
 # Request at least rails-html-sanitizer 1.0.3 because of security advisories
 gem "rails-html-sanitizer", ">= 1.0.3"
@@ -95,6 +94,11 @@ if File.exist?(database_file)
 else
   warn("Please configure your config/database.yml first")
 end
+
+# Dev tools (that may be run in production mode since development mode doesn't seem to be working)
+gem "rerun", "~> 0.13.0"
+gem "pry", "~> 0.12.2"
+gem "pry-nav", "~> 0.3.0"
 
 group :development do
   gem "rdoc", "~> 4.3"

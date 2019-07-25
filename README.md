@@ -92,8 +92,4 @@ See [Redmine tutorial](http://www.redmine.org/projects/redmine/wiki/Plugin_Tutor
 
 1. Restart the server for plugins to take effect
 
-For GreenMachine specifically:
-
-1. Copy config files: `cp lib/secrets.rb{.example,}`
-
-1. Add QuickBooks keys to `lib/secrets.rb`
+For GreenMachine specifically, docs are [here](https://github.com/sassafrastech/greenmachine).

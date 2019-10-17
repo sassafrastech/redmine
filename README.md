@@ -93,3 +93,16 @@ See [Redmine tutorial](http://www.redmine.org/projects/redmine/wiki/Plugin_Tutor
 1. Restart the server for plugins to take effect
 
 For GreenMachine specifically, docs are [here](https://github.com/sassafrastech/greenmachine).
+
+### Themes
+
+1. Put any themes in the `public/themes/` directory, e.g. for Sassafras:
+
+    ```bash
+    cd public/themes
+    git clone https://github.com/sassafrastech/redmine-circle-theme.git sassafras
+    ```
+
+1. Restart the server for themes to be available
+
+For the Sassasfras theme specifically, the repo is [here](https://github.com/sassafrastech/redmine-circle-theme).

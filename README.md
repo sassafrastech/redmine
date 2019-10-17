@@ -2,15 +2,17 @@
 
 Sassafras fork of Redmine: a flexible project management web application written using Ruby on Rails framework.
 
-More details can be found in the `doc` directory or on the official website <http://www.redmine.org>.
+More details can be found in the `doc` directory or on the official website [here](http://www.redmine.org).
+
+Upstream changelog is [here](http://www.redmine.org/projects/redmine/wiki/changelog).
 
 ## Development
 
 ### Local setup
 
-Official, detailed instructions can be found in the `INSTALL` file. Some of the steps are out of date for 2019 since Sassafras is using an old fork.
+Official, detailed instructions can be found in the `INSTALL` file. However, most of what you need for Sassafras should be here.
 
-It's recommended that you use a separate rbenv installation for this since it's so old (Ruby 2.2 is the max supported).
+Multiple environments (e.g. production/development) are NOT well supported. It's recommended to do this setup using **production only**.
 
 1. Install mysql:
 
@@ -22,7 +24,7 @@ It's recommended that you use a separate rbenv installation for this since it's 
     sudo mysql.server restart
     ```
 
-1. Create db: `mysql -u root -e "create database redmine; create database redmine_development;"`
+1. Create db: `mysql -u root -e "create database redmine;"`
 
 1. Copy config files:
 
@@ -34,18 +36,20 @@ It's recommended that you use a separate rbenv installation for this since it's 
 
 1. Edit `config/database.yml` if needed; should be fine by default
 
-1. Install old bundler: `gem install bundler -v "~> 1"`
+1. Install bundler: `gem install bundler`
 
 1. Install dependencies: `bundle install --without rmagick`
 
     - To fix `mysql2` on mac: `gem install mysql2 -v '~> 0.3.21' -- --with-ldflags=-L/usr/local/opt/openssl/lib --with-cppflags=-I/usr/local/opt/openssl/include`
     - You can try `brew install imagemagick@6` if you want rmagick
 
+1. You **may** need to install a missing dependency if it asks: `gem install net-ldap`
+
 1. Do some initialization:
 
     ```bash
-    bundle exec rake generate_secret_token
-    bundle exec rake db:migrate RAILS_ENV=production
+    rake generate_secret_token
+    rake db:migrate RAILS_ENV=production
     ```
 
 1. Configure access:
@@ -54,7 +58,7 @@ It's recommended that you use a separate rbenv installation for this since it's 
     # Probably unnecessary
     # sudo chown -R redmine:redmine files log tmp public/plugin_assets
 
-    # Maybe unnecessary?
+    # Maybe unnecessary
     sudo chmod -R 755 files log tmp public/plugin_assets
     ```
 
@@ -105,4 +109,4 @@ For GreenMachine specifically, docs are [here](https://github.com/sassafrastech/
 
 1. Restart the server for themes to be available
 
-For the Sassasfras theme specifically, the repo is [here](https://github.com/sassafrastech/redmine-circle-theme).
+For the Sassasfras theme specifically, docs are [here](https://github.com/sassafrastech/redmine-circle-theme).

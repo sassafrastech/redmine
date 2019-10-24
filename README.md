@@ -60,12 +60,11 @@ Multiple environments (e.g. production/development) are NOT well supported. It's
     RAILS_ENV=production bundle exec rails redmine:plugins:migrate # This will fail for old plugins, you need to modify the source code in to change old "ActiveRecord::Migration" to "ActiveRecord::Migration[4.2]"
     ```
 
-    - Plugins include:
-      - https://github.com/ixti/redmine_tags
+    - Sassy plugins include:
+      - https://github.com/sassafrastech/greenmachine
+      - https://github.com/alphanodes/additionals
+      - https://github.com/alphanodes/additional_tags
       - https://www.redmineup.com/pages/plugins/agile
-      - https://github.com/speedy32129/time_logger
-      - https://github.com/SkyWriter/toggl
-    - What does this do? `RAILS_ENV=production bundle exec rails redmine:plugins`
 
 1. Configure access:
 
@@ -125,3 +124,19 @@ For GreenMachine specifically, docs are [here](https://github.com/sassafrastech/
 1. Restart the server for themes to be available
 
 For the Sassasfras theme specifically, docs are [here](https://github.com/sassafrastech/redmine-circle-theme).
+
+## Production
+
+### Deploying updates
+
+See full guide: https://www.redmine.org/projects/redmine/wiki/RedmineUpgrade
+
+1. Locally: Push changes to github
+1. On server plugins/themes directories: `git pull` any changes manually
+1. Locally: `bundle exec cap production deploy`
+    1. Choose a branch (enter to select default)
+
+### Uninstalling a plugin
+
+1. Remove from database: `bundle exec rake redmine:plugins:migrate NAME=foo VERSION=0 RAILS_ENV=production`
+1. Remove from disk: `rm -rf plugins/foo/`

@@ -79,7 +79,10 @@ gem "pry-nav", "~> 0.3.0"
 
 group :development do
   gem "yard"
+
   gem "capistrano", "~> 3.11", require: false
+  gem "net-ssh", "< 5.0"
+  gem "net-scp", "< 2.0"
 end
 
 group :test do

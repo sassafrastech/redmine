@@ -84,6 +84,7 @@ gem "pry-nav", "~> 0.3.0"
 
 group :development do
   gem "yard"
+  gem "capistrano", "~> 3.11", require: false
 end
 
 group :test do

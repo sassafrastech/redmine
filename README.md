@@ -31,8 +31,6 @@ Multiple environments (e.g. production/development) are NOT well supported. It's
     gem install mysql2 -v 0.5.7 -- --with-mysql-config=$(brew --prefix mysql-client)/bin/mysql_config
     ```
 
-1. Create db: `mysql -u root -e "create database redmine;"`
-
 1. Copy config files:
 
     ```bash
@@ -45,45 +43,36 @@ Multiple environments (e.g. production/development) are NOT well supported. It's
 
 1. Install bundler: `gem install bundler`
 
-1. Install dependencies: `bundle install --without rmagick`
+1. Install dependencies: `bundle install` # Or optionally: `bundle install --without rmagick`
 
-    - To fix `mysql2` on mac: `gem install mysql2 -v '~> 0.5.6' -- --with-ldflags=-L/usr/local/opt/openssl/lib --with-cppflags=-I/usr/local/opt/openssl/include`
-    - You can try `brew install imagemagick@6` if you want rmagick
+1. Make sure a secret is set: `bundle exec rake generate_secret_token` # Is this format old?
 
-1. You **may** need to install a missing dependency if it asks: `gem install net-ldap`
+1. If there's old data you want to purge: `mysql -u root -e "drop database redmine_development;"`
 
 1. Do some initialization:
 
     ```bash
-    bundle exec rails generate_secret_token
-    RAILS_ENV=production bundle exec rails db:migrate
-    RAILS_ENV=production bundle exec rails redmine:plugins:migrate # This will fail for old plugins, you need to modify the source code in to change old "ActiveRecord::Migration" to "ActiveRecord::Migration[4.2]"
+    bundle exec rake db:create
+    bundle exec rake db:migrate
+    bundle exec rake redmine:plugins:migrate # This will fail for old plugins, you need to modify the source code in to change old "ActiveRecord::Migration" to "ActiveRecord::Migration[4.2]"
+    bundle exec rake redmine:load_default_data # Follow prompts
     ```
 
-    - Plugins include:
-      - https://github.com/ixti/redmine_tags
+    - Sassy plugins include:
+      - https://github.com/sassafrastech/greenmachine
+      - https://github.com/alphanodes/additionals
+      - https://github.com/alphanodes/additional_tags
       - https://www.redmineup.com/pages/plugins/agile
-      - https://github.com/speedy32129/time_logger
-      - https://github.com/SkyWriter/toggl
-    - What does this do? `RAILS_ENV=production bundle exec rails redmine:plugins`
 
-1. Configure access:
-
-    ```bash
-    # Probably unnecessary
-    # sudo chown -R redmine:redmine files log tmp public/plugin_assets
-
-    # Maybe unnecessary
-    sudo chmod -R 755 files log tmp public/plugin_assets
-    ```
+1. If it fails, you may need to ensure file ownership, e.g.: `sudo chown -R redmine:redmine files log tmp public/plugin_assets`
 
 1. Verify it works:
 
     - `bundle exec rails s -e production`
     - Open <http://localhost:3000/>
-    - Sign in with credentials `admin`/`admin`
+    - Sign in with credentials `admin`/`admin` (requires reset on first login)
 
-1. Load the defaults via <http://localhost:3000/admin>
+1. Configure settings in your browser, e.g. the Sassafras theme at <http://localhost:3000/settings?tab=display>
 
 ### Local dev
 
@@ -125,3 +114,19 @@ For GreenMachine specifically, docs are [here](https://github.com/sassafrastech/
 1. Restart the server for themes to be available
 
 For the Sassasfras theme specifically, docs are [here](https://github.com/sassafrastech/redmine-circle-theme).
+
+## Production
+
+### Deploying updates
+
+See full guide: https://www.redmine.org/projects/redmine/wiki/RedmineUpgrade
+
+1. Locally: Push changes to github
+1. On server plugins/themes directories: `git pull` any changes manually
+1. Locally: `bundle exec cap production deploy`
+    1. Choose a branch (enter to select default)
+
+### Uninstalling a plugin
+
+1. Remove from database: `bundle exec rake redmine:plugins:migrate NAME=foo VERSION=0 RAILS_ENV=production`
+1. Remove from disk: `rm -rf plugins/foo/`

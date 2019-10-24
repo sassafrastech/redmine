@@ -94,6 +94,18 @@ else
   warn("Please configure your config/database.yml first")
 end
 
+gem "capistrano", "~> 3.11", require: false
+gem "net-ssh", "~> 7.0"
+gem "capistrano-bundler", "~> 2.0"
+gem "capistrano-rails", "~> 1.4"
+gem "capistrano-rbenv", "~> 2.1"
+gem "capistrano-passenger", "~> 0.2"
+
+# SSH key support in ed25519 format
+gem "ed25519"
+gem "bcrypt_pbkdf", "< 2.0"
+gem "rbnacl", "< 5.0" # For older rails
+
 # Dev tools (that may be run in production mode since development mode doesn't seem to be working)
 gem "rerun", "~> 0.14"
 gem "pry", "~> 0.15"

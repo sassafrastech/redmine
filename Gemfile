@@ -83,6 +83,9 @@ group :development do
   gem "capistrano", "~> 3.11", require: false
   gem "net-ssh", "< 5.0"
   gem "net-scp", "< 2.0"
+  gem "capistrano-bundler", "~> 1.6"
+  gem "capistrano-rails", "~> 1.4"
+  gem "capistrano-rbenv", "~> 2.1"
 end
 
 group :test do

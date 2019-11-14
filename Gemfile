@@ -72,6 +72,14 @@ else
   warn("Please configure your config/database.yml first")
 end
 
+gem "capistrano", "~> 3.11", require: false
+gem "net-ssh", "< 5.0"
+gem "net-scp", "< 2.0"
+gem "capistrano-bundler", "~> 1.6"
+gem "capistrano-rails", "~> 1.4"
+gem "capistrano-rbenv", "~> 2.1"
+gem "capistrano-passenger", "~> 0.2"
+
 # Dev tools (that may be run in production mode since development mode doesn't seem to be working)
 gem "rerun", "~> 0.13.0"
 gem "pry", "~> 0.12.2"
@@ -79,13 +87,6 @@ gem "pry-nav", "~> 0.3.0"
 
 group :development do
   gem "yard"
-
-  gem "capistrano", "~> 3.11", require: false
-  gem "net-ssh", "< 5.0"
-  gem "net-scp", "< 2.0"
-  gem "capistrano-bundler", "~> 1.6"
-  gem "capistrano-rails", "~> 1.4"
-  gem "capistrano-rbenv", "~> 2.1"
 end
 
 group :test do

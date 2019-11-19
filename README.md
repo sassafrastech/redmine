@@ -12,6 +12,8 @@ Upstream changelog is [here](http://www.redmine.org/projects/redmine/wiki/change
 
 Official, detailed instructions can be found in the `INSTALL` file. However, most of what you need for Sassafras should be here.
 
+Official upgrade steps between major versions are documented [here](https://www.redmine.org/projects/redmine/wiki/RedmineUpgrade).
+
 Multiple environments (e.g. production/development) are NOT well supported. It's recommended to do this setup using **production only**.
 
 1. Install mysql:

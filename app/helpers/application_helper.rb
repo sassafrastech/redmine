@@ -264,7 +264,7 @@ module ApplicationHelper
     when 'FalseClass'
       l(:general_text_No)
     when 'Issue'
-      object.visible? && html ? link_to_issue(object) : "##{object.id}"
+      object.visible? && html ? link_to_issue(object) : "##{object.id}: #{object.subject}"
     when 'Attachment'
       if html
         content_tag(

@@ -1402,11 +1402,9 @@ class Query < ActiveRecord::Base
   end
 
   def date_for_user_time_zone(y, m, d)
-    if tz = User.current.time_zone
-      tz.local y, m, d
-    else
-      Time.local y, m, d
-    end
+    # Always use local time to avoid date query date offset issue
+    # http://www.redmine.org/issues/23189
+    Time.local y, m, d
   end
 
   # Returns a SQL clause for a date or datetime field.

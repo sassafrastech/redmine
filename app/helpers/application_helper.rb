@@ -251,7 +251,7 @@ module ApplicationHelper
     when 'FalseClass'
       l(:general_text_No)
     when 'Issue'
-      object.visible? && html ? link_to_issue(object) : "##{object.id}"
+      object.visible? && html ? link_to_issue(object) : "##{object.id}: #{object.subject}"
     when 'Attachment'
       html ? link_to_attachment(object) : object.filename
     when 'CustomValue', 'CustomFieldValue'

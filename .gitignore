@@ -1,5 +1,4 @@
 /.project
-/.idea
 /.loadpath
 /.powrc
 /.rvmrc
@@ -42,4 +41,5 @@
 /Gemfile.local
 
 # IDEs
-.idea/
+.idea/*
+!.idea/runConfigurations

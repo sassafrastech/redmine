@@ -50,8 +50,9 @@ Multiple environments (e.g. production/development) are NOT well supported. It's
 1. Do some initialization:
 
     ```bash
-    rake generate_secret_token
-    rake db:migrate RAILS_ENV=production
+    rails generate_secret_token
+    RAILS_ENV=production rails db:migrate
+    RAILS_ENV=production rails redmine:plugins:migrate
     ```
 
 1. Configure access:

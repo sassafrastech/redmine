@@ -13,3 +13,17 @@ if ENV["REV"]
 else
   ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
 end
+
+namespace :db do
+  task :migrate_plugins do
+    on roles(:all) do
+      within release_path do
+        with rails_env: fetch(:rails_env) do
+          execute(:rake, "redmine:plugins:migrate")
+        end
+      end
+    end
+  end
+end
+
+after "deploy:migrate", "db:migrate_plugins"

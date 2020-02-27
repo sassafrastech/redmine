@@ -119,5 +119,6 @@ For the Sassasfras theme specifically, docs are [here](https://github.com/sassaf
 ### Deploying
 
 1. Push any changes
+1. `git pull` changes manually for any plugins/themes
 1. `bundle exec cap production deploy`
-1. Choose a branch (enter to select default)
+    1. Choose a branch (enter to select default)

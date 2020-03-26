@@ -400,10 +400,15 @@ module QueriesHelper
   # Renders the list of queries for the sidebar
   def render_sidebar_queries(klass, project)
     queries = sidebar_queries(klass, project)
+    private = queries.select(&:is_private?)
+    non_private = queries.reject(&:is_private?)
+    project_specific = non_private.select(&:project_id?)
+    global = non_private.reject(&:project_id?)
 
     out = ''.html_safe
-    out << query_links(l(:label_my_queries), queries.select(&:is_private?))
-    out << query_links(l(:label_query_plural), queries.reject(&:is_private?))
+    out << query_links(l(:label_my_queries), private)
+    out << query_links(l(:label_query_plural) + ' (project)', project_specific) unless project_specific.empty?
+    out << query_links(l(:label_query_plural) + ' (global)', global)
     out
   end
 end

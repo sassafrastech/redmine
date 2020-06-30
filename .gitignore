@@ -40,6 +40,9 @@
 /.bundle
 /Gemfile.local
 
+# Local bundle installs
+vendor/bundle/
+
 # IDEs
 .idea/*
 !.idea/runConfigurations

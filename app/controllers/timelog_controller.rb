@@ -31,7 +31,9 @@ class TimelogController < ApplicationController
   before_action :authorize_logging_time_for_other_users, :only => [:create, :update]
 
   accept_rss_auth :index
-  accept_api_auth :index, :show, :create, :update, :destroy
+
+  # Tom added :report on 6/21/2021 b/c we need it for workload sheet.
+  accept_api_auth :index, :show, :create, :update, :destroy, :report
 
   rescue_from Query::StatementInvalid, :with => :query_statement_invalid
 

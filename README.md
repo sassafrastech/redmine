@@ -42,7 +42,7 @@ Multiple environments (e.g. production/development) are NOT well supported. It's
 
 1. Install dependencies: `bundle install --without rmagick`
 
-    - To fix `mysql2` on mac: `gem install mysql2 -v '~> 0.3.21' -- --with-ldflags=-L/usr/local/opt/openssl/lib --with-cppflags=-I/usr/local/opt/openssl/include`
+    - To fix `mysql2` on mac: `gem install mysql2 -v '~> 0.5.6' -- --with-ldflags=-L/usr/local/opt/openssl/lib --with-cppflags=-I/usr/local/opt/openssl/include`
     - You can try `brew install imagemagick@6` if you want rmagick
 
 1. You **may** need to install a missing dependency if it asks: `gem install net-ldap`

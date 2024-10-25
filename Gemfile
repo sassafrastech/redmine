@@ -3,17 +3,18 @@ source 'https://rubygems.org'
 ruby '>= 2.3.0', '< 2.7.0' if Bundler::VERSION >= '1.12.0'
 gem "bundler", ">= 1.5.0"
 
-gem 'rails', '5.2.4.2'
+gem 'rails', '5.2.6.3'
 gem 'sprockets', '~> 3.7.2' if RUBY_VERSION < '2.5'
+gem 'globalid', '~> 0.4.2' if Gem.ruby_version < Gem::Version.new('2.6.0')
 gem "rouge", "~> 3.12.0"
 gem "request_store", "~> 1.4.1"
 gem "mini_mime", "~> 1.0.1"
 gem "actionpack-xml_parser"
 gem "roadie-rails", (RUBY_VERSION < "2.5" ? "~> 1.3.0" : "~> 2.1.0")
-gem "mimemagic"
+gem 'marcel'
 gem "mail", "~> 2.7.1"
-gem "csv", "~> 3.1.1"
-gem "nokogiri", "~> 1.10.0"
+gem 'csv', (RUBY_VERSION < '2.5' ? ['>= 3.1.1', '<= 3.1.5'] : '~> 3.1.1')
+gem 'nokogiri', (RUBY_VERSION < '2.5' ? '~> 1.10.0' : '~> 1.11.1')
 gem "i18n", "~> 1.6.0"
 gem "rbpdf", "~> 1.20.0"
 
@@ -38,7 +39,7 @@ end
 
 # Optional Markdown support, not for JRuby
 group :markdown do
-  gem "redcarpet", "~> 3.5.0"
+  gem 'redcarpet', '~> 3.5.1'
 end
 
 # Include database gems for the adapters found in the database
@@ -47,7 +48,8 @@ require 'erb'
 require 'yaml'
 database_file = File.join(File.dirname(__FILE__), "config/database.yml")
 if File.exist?(database_file)
-  database_config = YAML::load(ERB.new(IO.read(database_file)).result)
+  yaml_config = ERB.new(IO.read(database_file)).result
+  database_config = YAML.respond_to?(:unsafe_load) ? YAML.unsafe_load(yaml_config) : YAML.load(yaml_config)
   adapters = database_config.values.map {|c| c['adapter']}.compact.uniq
   if adapters.any?
     adapters.each do |adapter|
@@ -59,8 +61,8 @@ if File.exist?(database_file)
       when /sqlite3/
         gem "sqlite3", "~> 1.4.0", :platforms => [:mri, :mingw, :x64_mingw]
       when /sqlserver/
-        gem "tiny_tds", "~> 1.0.5", :platforms => [:mri, :mingw, :x64_mingw]
-        gem "activerecord-sqlserver-adapter", :platforms => [:mri, :mingw, :x64_mingw]
+        gem "tiny_tds", "~> 2.1.2", :platforms => [:mri, :mingw, :x64_mingw]
+        gem "activerecord-sqlserver-adapter", "~> 5.2.1", :platforms => [:mri, :mingw, :x64_mingw]
       else
         warn("Unknown database adapter `#{adapter}` found in config/database.yml, use Gemfile.local to load your own database gems")
       end

@@ -334,7 +334,7 @@ tr.user.locked, tr.user.registered { color: #aaa; }
 tr.user.locked a, tr.user.registered a { color: #aaa; }
 
 table.permissions td.role {color:#999;font-size:90%;font-weight:normal !important;text-align:center;vertical-align:bottom;}
-table.permissions tr.group>td:nth-of-type(1), 
+table.permissions tr.group>td:nth-of-type(1),
 table.tracker-summary tr.group>td:nth-of-type(1) {font-weight: bold;}
 
 tr.wiki-page-version td.updated_on, tr.wiki-page-version td.author {text-align:center;}
@@ -474,7 +474,7 @@ select {
   background-position: calc(100% - 7px) 50%;
   padding-right: 20px;
 }
-input[type="file"] {border: 0; padding-left: 0; padding-right: 0; background-color: initial; }
+input[type="file"] {border: 0; padding-left: 0; padding-right: 0; height: initial; background-color: initial; }
 input[type="submit"], button[type="submit"] {
   -webkit-appearance: button;
   cursor: pointer;
@@ -528,11 +528,14 @@ div.issue .attributes {margin-top: 2em;}
 div.issue .attributes .attribute {padding-left:180px; clear:left; min-height: 1.8em;}
 div.issue .attributes .attribute .label {width: 170px; margin-left:-180px; font-weight:bold; float:left;  overflow:hidden; text-overflow: ellipsis;}
 div.issue .attribute .value {overflow:auto; text-overflow: ellipsis;}
+div.issue .attribute.string_cf .value .wiki p {margin-top: 0; margin-bottom: 0;}
+div.issue .attribute.text_cf .value .wiki p:first-of-type {margin-top: 0;}
 div.issue.overdue .due-date .value { color: #c22; }
 
 #issue_tree table.issues, #relations table.issues { border: 0; }
 #issue_tree td.checkbox, #relations td.checkbox {display:none;}
-#relations td.buttons, #issue_tree td.buttons {padding:0;}
+#issue_tree td.subject, #relations td.subject {width: 50%;}
+#issue_tree td.buttons, #relations td.buttons {padding:0;}
 
 #trackers_description {display:none;}
 #trackers_description dt {font-weight: bold; text-decoration: underline;}
@@ -761,6 +764,7 @@ span.pagination>span {white-space:nowrap;}
 }
 
 #search-form fieldset p {margin:0.2em 0;}
+#csv-export-options fieldset {padding: 0;}
 
 /***** Tabular forms ******/
 .tabular p{
@@ -831,6 +835,7 @@ input#months { width: 46px; }
 
 .tabular .wiki-preview, .tabular .jstTabs {width: 95%;}
 .tabular.settings .wiki-preview, .tabular.settings .jstTabs { width: 99%; }
+.tabular.settings .wiki-preview p {padding-left: 0 !important}
 .tabular .wiki-preview p {
   min-height: initial;
   padding: 0;
@@ -839,7 +844,7 @@ input#months { width: 46px; }
   overflow: initial;
 }
 
-.tabular.settings p{ padding-left: 300px; }
+.tabular.settings p { padding-left: 300px; }
 .tabular.settings label{ margin-left: -300px; width: 295px; }
 .tabular.settings textarea, .tabular.settings .wiki-preview, .tabular.settings .jstTabs { width: 99%; }
 
@@ -1436,7 +1441,8 @@ td.gantt_selected_column .gantt_hdr,.gantt_selected_column_container {
   font-size: 0.9em;
   border-radius: 3px;
   border: 0;
-  box-shadow: none
+  box-shadow: none;
+  white-space: pre-wrap;
 }
 
 /***** Icons *****/

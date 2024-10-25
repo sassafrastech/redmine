@@ -898,6 +898,23 @@ class IssueTest < ActiveSupport::TestCase
     assert_equal Date.parse('2012-07-14'), issue.due_date
   end
 
+  def test_safe_attributes_notes_should_check_add_issue_notes_permission
+    # With add_issue_notes permission
+    user = User.find(2)
+    issue = Issue.new(:project => Project.find(1))
+    issue.init_journal(user)
+    issue.send :safe_attributes=, {'notes' => 'note'}, user
+    assert_equal 'note', issue.notes
+
+    # Without add_issue_notes permission
+    Role.find(1).remove_permission!(:add_issue_notes)
+    issue = Issue.new(:project => Project.find(1))
+    user.reload
+    issue.init_journal(user)
+    issue.send :safe_attributes=, {'notes' => 'note'}, user
+    assert_equal '', issue.notes
+  end
+
   def test_safe_attributes_should_accept_target_tracker_enabled_fields
     source = Tracker.find(1)
     source.core_fields = []
@@ -1457,6 +1474,23 @@ class IssueTest < ActiveSupport::TestCase
     end
 
     assert_equal [3, nil], copy.children.map(&:assigned_to_id)
+  end
+
+  def test_copy_should_not_add_attachments_to_journal
+    set_tmp_attachments_directory
+    issue = Issue.generate!
+    copy = Issue.new
+    copy.init_journal User.find(1)
+    copy.copy_from issue
+
+    copy.project = issue.project
+    copy.save_attachments(
+      { 'p0' => {'file' => mock_file_with_options(:original_filename => 'upload')} }
+    )
+    assert copy.save
+    assert j = copy.journals.last
+    assert_equal 1, j.details.size
+    assert_equal 'relation', j.details[0].property
   end
 
   def test_should_not_call_after_project_change_on_creation

@@ -1039,10 +1039,10 @@ module ApplicationHelper
                 url = issue_url(issue, :only_path => only_path, :anchor => anchor)
                 link =
                   if sep == '##'
-                    link_to("#{issue.tracker.name} ##{oid}#{comment_suffix}",
+                    link_to("#{issue.tracker.name} ##{oid}#{comment_suffix}: #{issue.subject}",
                             url,
                             :class => issue.css_classes,
-                            :title => "#{issue.tracker.name}: #{issue.subject.truncate(100)} (#{issue.status.name})") + ": #{issue.subject}"
+                            :title => "#{l(:field_status)}: #{issue.status.name}")
                   else
                     link_to("##{oid}#{comment_suffix}",
                             url,
@@ -1190,7 +1190,7 @@ module ApplicationHelper
               )|
               (
               (?<sep4>@)
-              (?<identifier3>[A-Za-z0-9_\-@\.]*)
+              (?<identifier3>[A-Za-z0-9_\-@\.]*?)
               )
             )
             (?=
@@ -1415,26 +1415,13 @@ module ApplicationHelper
     arg.to_json.to_s.gsub('/', '\/').html_safe
   end
 
-  def back_url
-    url = params[:back_url]
-    if url.nil? && referer = request.env['HTTP_REFERER']
-      url = CGI.unescape(referer.to_s)
-      # URLs that contains the utf8=[checkmark] parameter added by Rails are
-      # parsed as invalid by URI.parse so the redirect to the back URL would
-      # not be accepted (ApplicationController#validate_back_url would return
-      # false)
-      url.gsub!(/(\?|&)utf8=\u2713&?/, '\1')
-    end
-    url
-  end
-
   def back_url_hidden_field_tag
-    url = back_url
+    url = validate_back_url(back_url)
     hidden_field_tag('back_url', url, :id => nil) unless url.blank?
   end
 
   def cancel_button_tag(fallback_url)
-    url = back_url.blank? ? fallback_url : back_url
+    url = validate_back_url(back_url) || fallback_url
     link_to l(:button_cancel), url
   end
 
@@ -1609,7 +1596,7 @@ module ApplicationHelper
 
   # Returns the javascript tags that are included in the html layout head
   def javascript_heads
-    tags = javascript_include_tag('jquery-2.2.4-ui-1.11.0-ujs-5.2.3', 'tribute-3.7.3.min', 'application', 'responsive')
+    tags = javascript_include_tag('jquery-2.2.4-ui-1.11.0-ujs-5.2.4.5', 'tribute-3.7.3.min', 'application', 'responsive')
     unless User.current.pref.warn_on_leaving_unsaved == '0'
       tags << "\n".html_safe + javascript_tag("$(window).on('load', function(){ warnLeavingUnsaved('#{escape_javascript l(:text_warn_on_leaving_unsaved)}'); });")
     end

@@ -1126,6 +1126,21 @@ class QueryTest < ActiveSupport::TestCase
     assert_equal [1, 3, 7, 8], find_issues_with_query(query).map(&:id).uniq.sort
   end
 
+  def test_filter_on_fixed_version_status_respects_sharing
+    issue = Issue.generate!(:project_id => 1, :fixed_version_id => 7)
+
+    filter_name = "fixed_version.status"
+
+    query = IssueQuery.new(:name => '_', :project => Project.find(1))
+    assert_include filter_name, query.available_filters.keys
+    query.filters = {filter_name => {:operator => '=', :values => ['open']}}
+    assert_include issue, find_issues_with_query(query)
+
+    query = IssueQuery.new(:name => '_', :project => Project.find(1))
+    query.filters = {filter_name => {:operator => '=', :values => ['closed']}}
+    assert_not_includes find_issues_with_query(query), issue
+  end
+
   def test_filter_on_version_custom_field
     field = IssueCustomField.generate!(:field_format => 'version', :is_filter => true)
     issue = Issue.generate!(:project_id => 1, :tracker_id => 1, :custom_field_values => {field.id.to_s => '2'})
@@ -1451,6 +1466,19 @@ class QueryTest < ActiveSupport::TestCase
     end
   end
 
+  def test_available_filters_as_json_should_not_include_duplicate_assigned_to_id_values
+    set_language_if_valid 'en'
+    user = User.find_by_login 'dlopper'
+    with_current_user User.find(1) do
+      q = IssueQuery.new
+      q.filters = {"assigned_to_id" => {:operator => '=', :values => user.id.to_s}}
+
+      filters = q.available_filters_as_json
+      assert_not_include [user.name, user.id.to_s], filters['assigned_to_id']['values']
+      assert_include [user.name, user.id.to_s, 'active'], filters['assigned_to_id']['values']
+    end
+  end
+
   def test_available_filters_as_json_should_include_missing_author_id_values
     user = User.generate!
     with_current_user User.find(1) do
@@ -1630,6 +1658,16 @@ class QueryTest < ActiveSupport::TestCase
     assert !q.sortable_columns['cf_1']
   end
 
+  def test_sortable_should_return_false_for_multi_custom_field
+    field = CustomField.find(1)
+    field.update_attribute :multiple, true
+
+    q = IssueQuery.new
+
+    field_column = q.available_columns.detect {|c| c.name==:cf_1}
+    assert !field_column.sortable?
+  end
+
   def test_default_sort
     q = IssueQuery.new
     assert_equal [['id', 'desc']], q.sort_criteria
@@ -1638,12 +1676,12 @@ class QueryTest < ActiveSupport::TestCase
   def test_sort_criteria_should_have_only_first_three_elements
     q = IssueQuery.new
     q.sort_criteria = [['priority', 'desc'], ['tracker', 'asc'], ['priority', 'asc'], ['id', 'asc'], ['project', 'asc'], ['subject', 'asc']]
-    assert_equal [['priority', 'desc'], ['tracker', 'asc'], ['priority', 'asc']], q.sort_criteria
+    assert_equal [['priority', 'desc'], ['tracker', 'asc'], ['id', 'asc']], q.sort_criteria
   end
 
-  def test_sort_criteria_should_remove_blank_keys
+  def test_sort_criteria_should_remove_blank_or_duplicate_keys
     q = IssueQuery.new
-    q.sort_criteria = [['priority', 'desc'], [nil, 'desc'], ['', 'asc'], ['project', 'asc']]
+    q.sort_criteria = [['priority', 'desc'], [nil, 'desc'], ['', 'asc'], ['priority', 'asc'], ['project', 'asc']]
     assert_equal [['priority', 'desc'], ['project', 'asc']], q.sort_criteria
   end
 
@@ -1701,6 +1739,34 @@ class QueryTest < ActiveSupport::TestCase
     values = issues.collect {|i| begin; Kernel.Float(i.custom_value_for(c.custom_field).to_s); rescue; nil; end}.compact
     assert !values.empty?
     assert_equal values.sort, values
+  end
+
+  def test_sort_with_group_by_timestamp_query_column_should_sort_after_date_value
+    User.current = User.find(1)
+
+    # Touch Issue#10 in order to be the last updated issue
+    Issue.find(10).update_attribute(:updated_on, Issue.find(10).updated_on + 1)
+
+    q = IssueQuery.new(
+      :name => '_',
+      :filters => { 'updated_on' => {:operator => 't', :values => ['']} },
+      :group_by => 'updated_on',
+      :sort_criteria => [['subject', 'asc']]
+    )
+
+    # The following 3 issues are updated today (ordered by updated_on):
+    #   Issue#10: Issue Doing the Blocking
+    #   Issue#9: Blocked Issue
+    #   Issue#6: Issue of a private subproject
+
+    # When we group by a timestamp query column, all the issues in the group have the same date value (today)
+    # and the time of the value should not be taken into consideration when sorting
+    #
+    # For the same issues after subject ascending should return the following:
+    # Issue#9: Blocked Issue
+    # Issue#10: Issue Doing the Blocking
+    # Issue#6: Issue of a private subproject
+    assert_equal [9, 10, 6], q.issues.map(&:id)
   end
 
   def test_sort_by_total_for_estimated_hours
@@ -1770,6 +1836,37 @@ class QueryTest < ActiveSupport::TestCase
     field = IssueCustomField.generate!(:field_format => 'float', :is_for_all => true)
     q = IssueQuery.new
     assert_include "cf_#{field.id}".to_sym, q.available_totalable_columns.map(&:name)
+  end
+
+  def test_available_totalable_columns_should_sort_in_position_order_for_custom_field
+    ProjectCustomField.delete_all
+    cf_pos3 = ProjectCustomField.generate!(:position => 3, :is_for_all => true, :field_format => 'int')
+    cf_pos4 = ProjectCustomField.generate!(:position => 4, :is_for_all => true, :field_format => 'float')
+    cf_pos1 = ProjectCustomField.generate!(:position => 1, :is_for_all => true, :field_format => 'float')
+    cf_pos2 = ProjectCustomField.generate!(:position => 2, :is_for_all => true, :field_format => 'int')
+    q = ProjectQuery.new
+    custom_field_columns = q.available_totalable_columns.select{|column| column.is_a?(QueryCustomFieldColumn)}
+    assert_equal [cf_pos1, cf_pos2, cf_pos3, cf_pos4], custom_field_columns.collect(&:custom_field)
+
+    IssueCustomField.delete_all
+    cf_pos3 = IssueCustomField.generate!(:position => 3, :is_for_all => true, :field_format => 'int')
+    cf_pos4 = IssueCustomField.generate!(:position => 4, :is_for_all => true, :field_format => 'float')
+    cf_pos1 = IssueCustomField.generate!(:position => 1, :is_for_all => true, :field_format => 'float')
+    cf_pos2 = IssueCustomField.generate!(:position => 2, :is_for_all => true, :field_format => 'int')
+    q = IssueQuery.new
+    custom_field_columns = q.available_totalable_columns.select{|column| column.is_a?(QueryCustomFieldColumn)}
+    assert_equal [cf_pos1, cf_pos2, cf_pos3, cf_pos4], custom_field_columns.collect(&:custom_field)
+
+    ProjectCustomField.delete_all
+    IssueCustomField.delete_all
+    TimeEntryCustomField.delete_all
+    cf_pos3 = TimeEntryCustomField.generate!(:position => 3, :is_for_all => true, :field_format => 'int')
+    cf_pos4 = TimeEntryCustomField.generate!(:position => 4, :is_for_all => true, :field_format => 'float')
+    cf_pos1 = TimeEntryCustomField.generate!(:position => 1, :is_for_all => true, :field_format => 'float')
+    cf_pos2 = TimeEntryCustomField.generate!(:position => 2, :is_for_all => true, :field_format => 'int')
+    q = TimeEntryQuery.new
+    custom_field_columns = q.available_totalable_columns.select{|column| column.is_a?(QueryCustomFieldColumn)}
+    assert_equal [cf_pos1, cf_pos2, cf_pos3, cf_pos4], custom_field_columns.collect(&:custom_field)
   end
 
   def test_total_for_estimated_hours
@@ -2340,6 +2437,17 @@ class QueryTest < ActiveSupport::TestCase
     assert_equal "table.field > '#{Query.connection.quoted_date f}' AND table.field <= '#{Query.connection.quoted_date t}'", c
   ensure
     ActiveRecord::Base.default_timezone = :local # restore Redmine default
+  end
+
+  def test_project_statement_with_closed_subprojects
+    project = Project.find(1)
+    project.descendants.each(&:close)
+
+    with_settings :display_subprojects_issues => '1' do
+      query = IssueQuery.new(:name => '_', :project => project)
+      statement = query.project_statement
+      assert_equal "projects.lft >= #{project.lft} AND projects.rgt <= #{project.rgt}", statement
+    end
   end
 
   def test_filter_on_subprojects

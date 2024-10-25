@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Redmine - project management software
-# Copyright (C) 2006-2019  Jean-Philippe Lang
+# Copyright (C) 2006-2020  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -19,17 +19,15 @@
 
 require File.expand_path('../../test_helper', __FILE__)
 
-class WelcomeTest < Redmine::IntegrationTest
-  fixtures :users, :email_addresses,
-           :projects, :enabled_modules, :members, :member_roles, :roles
+class EmailAddressTest < ActiveSupport::TestCase
+  fixtures :users
 
-  def test_robots
-    get '/robots.txt'
-    assert_response :success
-    assert_equal 'text/plain', @response.content_type
-    # Redmine::Utils.relative_url_root does not effect on Rails 5.1.4.
-    assert @response.body.match(%r{^Disallow: /projects/ecookbook/issues\r?$})
-    assert @response.body.match(%r{^Disallow: /issues\?sort=\r?$})
-    assert @response.body.match(%r{^Disallow: /issues\?\*set_filter=\r?$})
+  def setup
+    User.current = nil
+  end
+
+  def test_address_with_punycode_tld_should_be_valid
+    email = EmailAddress.new(address: 'jsmith@example.xn--80akhbyknj4f')
+    assert email.valid?
   end
 end

@@ -124,11 +124,11 @@ module IssuesHelper
                          link_to_issue(
                            child,
                            :project => (issue.project_id != child.project_id)),
-                         :class => 'subject', :style => 'width: 50%') +
+                         :class => 'subject') +
              content_tag('td', h(child.status), :class => 'status') +
+             content_tag('td', link_to_user(child.assigned_to), :class => 'assigned_to') +
              content_tag('td', format_date(child.start_date), :class => 'start_date') +
              content_tag('td', format_date(child.due_date), :class => 'due_date') +
-             content_tag('td', link_to_user(child.assigned_to), :class => 'assigned_to') +
              content_tag('td',
                          (if child.disabled_core_fields.include?('done_ratio')
                             ''
@@ -179,12 +179,11 @@ module IssuesHelper
                              other,
                              :project => Setting.cross_project_issue_relations?)
                          }.html_safe,
-                         :class => 'subject',
-                         :style => 'width: 50%') +
+                         :class => 'subject') +
              content_tag('td', other_issue.status, :class => 'status') +
+             content_tag('td', link_to_user(other_issue.assigned_to), :class => 'assigned_to') +
              content_tag('td', format_date(other_issue.start_date), :class => 'start_date') +
              content_tag('td', format_date(other_issue.due_date), :class => 'due_date') +
-             content_tag('td', link_to_user(other_issue.assigned_to), :class => 'assigned_to') +
              content_tag('td',
                          (if other_issue.disabled_core_fields.include?('done_ratio')
                             ''
@@ -218,6 +217,11 @@ module IssuesHelper
       if issue.total_spent_hours == issue.spent_hours
         link_to(l_hours_short(issue.spent_hours), path)
       else
+        # link to global time entries if cross-project subtasks are allowed
+        # in order to show time entries from not descendents projects
+        if %w(system tree hierarchy).include?(Setting.cross_project_subtasks)
+          path = time_entries_path(:issue_id => "~#{issue.id}")
+        end
         s = issue.spent_hours > 0 ? l_hours_short(issue.spent_hours) : ""
         s += " (#{l(:label_total)}: #{link_to l_hours_short(issue.total_spent_hours), path})"
         s.html_safe
@@ -552,7 +556,7 @@ module IssuesHelper
       unless no_html
         diff_link =
           link_to(
-            'diff',
+            l(:label_diff),
             diff_journal_url(detail.journal_id, :detail_id => detail.id,
                              :only_path => options[:only_path]),
             :title => l(:label_view_diff))
@@ -578,6 +582,7 @@ module IssuesHelper
   end
 
   # Find the name of an associated record stored in the field attribute
+  # For project, return the associated record only if is visible for the current User
   def find_name_by_reflection(field, id)
     return nil if id.blank?
     @detail_value_name_by_reflection ||= Hash.new do |hash, key|
@@ -585,7 +590,7 @@ module IssuesHelper
       name = nil
       if association
         record = association.klass.find_by_id(key.last)
-        if record
+        if (record && !record.is_a?(Project)) || (record.is_a?(Project) && record.visible?)
           name = record.name.force_encoding('UTF-8')
         end
       end

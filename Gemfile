@@ -94,6 +94,11 @@ else
   warn("Please configure your config/database.yml first")
 end
 
+# Dev tools (that may be run in production mode since development mode doesn't seem to be working)
+gem "rerun", "~> 0.14"
+gem "pry", "~> 0.15"
+gem "pry-byebug", "~> 3.10"
+
 group :development, :test do
   gem 'debug'
 end

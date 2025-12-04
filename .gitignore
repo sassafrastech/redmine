@@ -1,5 +1,12 @@
+# Local bundle installs
+vendor/bundle/
+
+# IDEs
+.idea/*
+!.idea/runConfigurations
+
+# Everything else
 /.project
-/.idea
 /.loadpath
 /.powrc
 /.rvmrc
@@ -39,7 +46,6 @@
 *.rbc
 
 /.bundle
-/Gemfile.lock
 /Gemfile.local
 
 /node_modules

@@ -30,6 +30,8 @@ gem 'rubyzip', '~> 2.3.0'
 gem 'psych', '~> 3.1' if Gem.ruby_version < Gem::Version.new('2.6.0')
 gem 'loofah', '<= 2.20.0' if Gem.ruby_version < Gem::Version.new('2.5.0')
 
+gem "blankslate", "~> 3.1"
+
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :x64_mingw, :mswin]
 
@@ -89,6 +91,11 @@ if File.exist?(database_file)
 else
   warn("Please configure your config/database.yml first")
 end
+
+# Dev tools (that may be run in production mode since development mode doesn't seem to be working)
+gem "rerun", "~> 0.13.0"
+gem "pry", "~> 0.12.2"
+gem "pry-nav", "~> 0.3.0"
 
 group :development do
   gem "yard"

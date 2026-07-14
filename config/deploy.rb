@@ -5,7 +5,7 @@ set :application, "redmine"
 set :repo_url, "git@github.com:sassafrastech/redmine.git"
 set :deploy_to, "/home/deploy/redmine"
 set :linked_files, %w[config/initializers/secret_token.rb config/database.yml config/configuration.yml config/additional_environment.rb]
-set :linked_dirs, %w[tmp log plugins public/themes]
+set :linked_dirs, %w[tmp log plugins themes]
 set :pty, true
 
 if ENV["REV"]

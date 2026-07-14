@@ -104,10 +104,10 @@ For GreenMachine specifically, docs are [here](https://github.com/sassafrastech/
 
 ### Themes
 
-1. Put any themes in the `public/themes/` directory, e.g. for Sassafras:
+1. Put any themes in the `themes/` directory, e.g. for Sassafras:
 
     ```bash
-    cd public/themes
+    cd themes
     git clone https://github.com/sassafrastech/redmine-circle-theme.git sassafras
     ```
 

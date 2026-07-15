@@ -8,6 +8,13 @@ set :linked_files, %w[config/initializers/secret_token.rb config/database.yml co
 set :linked_dirs, %w[tmp log plugins themes]
 set :pty, true
 
+# Don't freeze the lockfile, because something weird is happening with ubutnu 18 where it thinks things need to change when they actually don't.
+# TODO: This block should be removed later.
+set :bundle_config, {
+  deployment: true,
+  frozen: false
+}
+
 if ENV["REV"]
   set :branch, ENV["REV"]
 else

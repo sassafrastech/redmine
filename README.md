@@ -117,9 +117,25 @@ For the Sassasfras theme specifically, docs are [here](https://github.com/sassaf
 
 ## Production
 
+### New server setup
+
+1. `sudo adduser deploy`
+   1. Add SSH keys to the deploy user also
+1. Follow https://www.phusionpassenger.com/docs/advanced_guides/install_and_upgrade/ instructions to install Passenger
+   1. Their docs are a bit outdated, make sure to replace `jammy` (Ubuntu 22) with e.g. `resolute` (Ubuntu 26) in `/etc/apt/sources.list.d/passenger.list` based on your Ubuntu version.
+   1. Also `sudo apt install libnginx-mod-http-passenger`
+1. Follow https://mariadb.com/docs/server/mariadb-quickstart-guides/installing-mariadb-server-guide instructions to install MariaDB
+   1. Initialize the database using the redmine guide: https://www.redmine.org/projects/redmine/wiki/RedmineInstall
+1. Follow https://github.com/rbenv/rbenv instructions to:
+   1. Install rbenv (don't use apt, use git on the deploy user)
+   1. Install the ruby version specified in `.ruby-version` (on deploy user)
+1. Copy over the `shared` folder if there's an existing server to migrate
+1. Follow the steps below to deploy the code initially
+1. Import a database dump: `mysql -u root redmine < dump.sql`
+
 ### Deploying updates
 
-See full guide: https://www.redmine.org/projects/redmine/wiki/RedmineUpgrade
+See full upgrade guide: https://www.redmine.org/projects/redmine/wiki/RedmineUpgrade
 
 1. Locally: Push changes to github
 1. On server plugins/themes directories: `git pull` any changes manually
